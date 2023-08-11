@@ -427,7 +427,7 @@ through trial and error that the `.cargo` directory wasn't being copied because
 `(source_tree ...)` silently ignores directories whose names begin
 with a ".". This meant that cargo didn't know to look in the `vendor` directory
 for packages. If you've been bitten by this and found this page by searching "dune
-ignores hidden files" then feel free to share your story at the github issue:
+ignores hidden folders" then feel free to share your story at the github issue:
 [Hidden folders are ignored in source_tree
 dep](https://github.com/ocaml/dune/issues/7135). I fixed the problem by renaming
 the directory to `dot_cargo`. Don't be tempted to name it `_cargo` as
@@ -1000,7 +1000,7 @@ I do love OCaml and I want to encourage more people to use it and grow the
 community but I don't want to invite others to have an experience like the one I
 described in this post. I work on Dune for my job and I'm very interested in
 how to make the experience of using it more welcoming. To find out whether my personal
-difficulties using it are due to a sum of unrelated quirks or a broad endemic
+difficulties using it are due to a sum of unrelated quirks or a broader systemic
 problem.
 
 Or maybe the problem is me.
