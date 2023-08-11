@@ -99,7 +99,7 @@ could pass them to the linker via `clang`:
 clang foo.c -Wl,-framework,CoreServices,-framework,CoreAudio,-framework,AudioUnit,-framework,AudioToolbox
 ```
 
-The `-Wl` flag tells clang to pass its argument to the linker. I need to find out how to do this in dune/OCaml.
+The `-Wl` flag tells clang to pass its argument to the linker. I need to find out how to do this in Dune/OCaml.
 
 Reading through Dune's library docs again and there's this field:
 > `(library_flags (<flags>))` is a list of flags passed to ocamlc and ocamlopt
