@@ -11,8 +11,7 @@ Before we get into it do I need to point out that my day job is working on the
 Dune build system. Despite being frustrated with the tooling at times I put up
 with it because I love programming in OCaml. I also love programming in Rust and
 use it for many personal projects. My comparisons between OCaml and Rust are
-mostly facetious. I know there are more people working on Rust than OCaml and it
-has momentum on its side being relatively young and cool. It makes different
+mostly facetious. I know there are more people working on Rust than OCaml. It makes different
 trade-offs and has plenty of problems of its own.
 
 The opinions I express here are my own and not those of Tarides or the (other)
@@ -997,10 +996,11 @@ find some other programming language where things do tend to just work but as
 far as I know no such language exists.
 
 I do love OCaml and I want to encourage more people to use it and grow the
-community but I don't want to invite others to have an experience like the one I
-described in this post. I work on Dune for my job and I'm very interested in
+community but
+I'm cautious to only recommend OCaml to people who have the time and energy and motivation to struggle through the types of problems I describe in this post.
+I work on Dune for my job and I'm very interested in
 how to make the experience of using it more welcoming. To find out whether my personal
-difficulties using it are due to a sum of unrelated quirks or a broader systemic
+difficulties using it are due to a sum of unrelated quirks or a symptom of a broader systemic
 problem.
 
 Or maybe the problem is me.
