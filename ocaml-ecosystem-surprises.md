@@ -463,7 +463,7 @@ The actual place I should have looked is in the [documentation for `(dirs
 > - The special value `:standard` which refers to the default set of used
 >   directories. These are the directories that don’t start with `.` or `_`.
 
-...but I only know that `dir` was related to my problem after reading solutions
+...but I only knew that `dir` was related to my problem after reading solutions
 to my problem in a GitHub issue. I only found the issue when I went to create an
 issue of my own and it was suggested as a duplicate based on the title.
 
@@ -580,7 +580,7 @@ time of writing I have an open PR to fix this bug.
 
 My synthesizer library can decode MIDI both from files and external devices. I
 elected to write my own MIDI parser rather than use the one from `mm`. Fool me
-once, etc., and besides, parsing MIDI is pretty straightforward. The most
+once, etc., and I thought writing a MIDI parser could be a fun exercise. The most
 complicated part is probably "Variable Length Quantities" - an encoding for
 integers where the most-significant bit of each byte is used to mark the final
 byte of the integer. Kind of like C strings but for integers.
@@ -697,7 +697,7 @@ end
 ```
 
 I put it inside a new module `For_test` whose name is meant to scare users away
-like the stripes on a poisonous snake. I'm only exposing this API for tests and
+like the stripes on a snake. I'm only exposing this API for tests and
 if you use it your code will probably break without warning.
 
 Then in a new package which I named `llama_tests` and will never release to
