@@ -369,7 +369,7 @@ with a Rust component to opam is that the sandbox environment used to build opam
 packages does not have internet access, and building a Rust project typically
 involves downloading dependencies. To get around this, the source tarball
 refered to in the opam package's manifest must already include all the Rust code
-needed to build the project. Setting this up is easy - run `cargo vendor` in the
+needed to build the project. Setting this up is a single step - run `cargo vendor` in the
 Rust project to create a `vendor` directory containing the code for all the
 project's dependencies. The command also prints some instructions for building
 with the vendored code:
@@ -467,13 +467,13 @@ The actual place I should have looked is in the [documentation for `(dirs
 to my problem in a GitHub issue. I only found the issue when I went to create an
 issue of my own and it was suggested as a duplicate based on the title.
 
-I find this UX anti-pattern to be pervasive in the OCaml tooling ecosystem
-which I think is why so often I'm surprised by something one of our tools does
-and why our tools tend to fail in complex, difficult to understand ways. There
-are so many special cases aimed to be helpful but when a special case fails and
+I find this UX anti-pattern to be pervasive in the OCaml tooling ecosystem which
+I think is why so often I'm surprised by something one of our tools does and why
+our tools tend to fail in complex, difficult to understand ways. There are so
+many special cases aimed to be helpful but when a special case fails and
 prevents me from doing something that should be simple I wish that the tools
-were dumber and failed in simpler ways which were easy to understand and fix or
-workaround.
+were dumber and failed in more predictable ways as I'd find that easier to
+understand and fix problems or work around them.
 
 If I got to name this pattern I would call it "Jar Jar-ing". In the Star Wars
 prequel trilogy Jar Jar Binks is always eager to help but his attempts usually
@@ -545,7 +545,7 @@ writing `.wav` data. Unlike `mm` which supports a wide range of media, `hound`
 only supports `.wav`. Also unlike `mm`, `hound` is actually capable of reading
 `.wav` files. I'd already gone to the effort of getting Rust interoperability
 working to get access to the `cpal` library for talking to the audio driver so
-it was easy to add an additional Rust dependency on `hound` and write a little
+it was straightforward to add an additional Rust dependency on `hound` and write a little
 wrapper that reads a `.wav` file and copies the contained audio samples into an
 OCaml array.
 
@@ -554,7 +554,7 @@ interoperability working as it's necessary to actually make sound at all via the
 `cpal` library. A nice unintended consequence was that when I couldn't find a
 high-quality OCaml library to load `.wav` files I could just use a Rust library
 instead. It's no secret that there are far more people writing Rust libraries
-than OCaml libraries but since OCaml/Rust interop is so easy we can just fill
+than OCaml libraries but since OCaml/Rust interop works so well we can just fill
 in any gaps in our library ecosystem with Rust libraries until our own libraries
 are up to scratch.
 
@@ -870,7 +870,7 @@ doesn't work elsewhere.
 
 I found this out when I was releasing the package to the Opam package repository
 and it failed some CI checks that build on all architectures supported by OCaml.
-The fix was easy and very unsurprising - marking the package as unavailable on
+The fix was also unsurprising - marking the package as unavailable on
 the architectures where it can't be compiled. I updated the package manifest I
 was releasing:
 ```diff
