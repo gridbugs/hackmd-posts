@@ -995,10 +995,20 @@ to the temptation is to think "well this ecosystem just isn't for me" and go
 find some other programming language where things do tend to just work but as
 far as I know no such language exists.
 
-I do love OCaml and I want to encourage more people to use it and grow the
-community but I'm cautious to only recommend OCaml to people who have the time
-and energy and motivation to struggle through the types of problems I describe
-in this post. I work on Dune for my job and I'm very interested in how to make
+And yet I stick around because I do love OCaml and I want to encourage more
+people to use it and grow the community but I'm uncomfortable recommending OCaml
+to people who don't have the time and energy and motivation to struggle through
+the types of problems I describe in this post. On the other hand I recognize
+that my own ability to be somewhat productive in personal OCaml projects is a
+consequence of privilege, primarily having enough free time and attention and
+general computing knowledge to debug all the weird issues I seem to encounter.
+Plus my work lets me spend two days each month hacking on personal OCaml
+projects. I expect many people will find OCaml tooling to be even less accessible
+than I do and if we only recommend OCaml to those privileged enough to handle
+our tools and exclude everyone else then what effect is that going to have on
+our community?
+
+I work on Dune for my job and I'm very interested in how to make
 the experience of using it more welcoming. To find out whether my personal
 difficulties using it are due to a sum of unrelated quirks or a symptom of a
 broader systemic problem.
