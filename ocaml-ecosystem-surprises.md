@@ -426,12 +426,12 @@ through trial and error that the `.cargo` directory wasn't being copied because
 `(source_tree ...)` silently ignores directories whose names begin
 with a ".". This meant that cargo didn't know to look in the `vendor` directory
 for packages. If you've been bitten by this and found this page by searching "dune
-ignores hidden folders" then feel free to share your story at the github issue:
+ignores hidden folders" then feel free to share your story at the GitHub issue:
 [Hidden folders are ignored in source_tree
 dep](https://github.com/ocaml/dune/issues/7135). I fixed the problem by renaming
 the directory to `dot_cargo`. Don't be tempted to name it `_cargo` as
 `source_tree` also ignores directories whose names begin with a "_". Some helpful
-advice from the aforementioned github issue was to explicitly tell dune about
+advice from the aforementioned GitHub issue was to explicitly tell dune about
 the `.cargo` directory in a dune file. Combined with suggestions from the
 ocaml-rs book, the dune file in the Rust project (next to `Cargo.toml`) is:
 ```clojure
@@ -931,8 +931,8 @@ purpose because it's possible to simulate `available` with `depends` by dependin
 packages which represent a particular architecture like
 `conf-arm64` or `conf-x86_64` which contain no code but which are only available
 on `arm64` or `x86_64` respectively. At the time of writing neither of those
-packages exist but I could create and release them and then add them as
-dependencies to my project but I'm not going to. (Technically I would need to
+packages exist but I could create and release (and maintain) them and then add them as
+dependencies to my project but I'm not going to do that. (Technically I would need to
 create `conf-arm32`, `conf-ppc64`, `conf-s390x` and `conf-x86_32` and declare
 that my package _conflicts_ with them rather than depends on them to match the
 behaviour of the `available` field I tried to add.)
