@@ -996,11 +996,11 @@ find some other programming language where things do tend to just work but as
 far as I know no such language exists.
 
 I do love OCaml and I want to encourage more people to use it and grow the
-community but
-I'm cautious to only recommend OCaml to people who have the time and energy and motivation to struggle through the types of problems I describe in this post.
-I work on Dune for my job and I'm very interested in
-how to make the experience of using it more welcoming. To find out whether my personal
-difficulties using it are due to a sum of unrelated quirks or a symptom of a broader systemic
-problem.
+community but I'm cautious to only recommend OCaml to people who have the time
+and energy and motivation to struggle through the types of problems I describe
+in this post. I work on Dune for my job and I'm very interested in how to make
+the experience of using it more welcoming. To find out whether my personal
+difficulties using it are due to a sum of unrelated quirks or a symptom of a
+broader systemic problem.
 
 Or maybe the problem is me.
