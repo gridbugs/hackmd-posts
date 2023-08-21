@@ -53,25 +53,48 @@ by OCaml-LSP.
 Merlin's [website](https://ocaml.github.io/merlin/) links to [docs for manual
 configuration](https://github.com/ocaml/merlin/wiki/Project-configuration). It
 assumes dune by default but you can write a config file if you're using a
-different build system. Reading the docs and following their instructions didn't
-seem to have any effect on OCaml-LSP's ability to find external libraries.
+different build system. OCaml-LSP can be configured to respect the merlin config
+file by starting the OCaml-LSP server with some extra arguments so that's an
+option as long as it doesn't prevent it from also working when using it with a
+regular dune project.
 
-However I did happen to notice that the `_build` directory created by Dune
+I did happen to notice that the `_build` directory created by Dune
 contains a file `_build/default/bin/my-project/.merlin-conf/exe-main` which
 contains binary data but also strings that seem to correspond to the locations
 of external libraries.
 
 ```
-$ cat _build/default/bin/my-projct/.merlin-conf/exe-main
-DUNE-merlin-confv4:C    "/Users/s/src/my-projct/_opam/lib/ocaml@    $/Users/s/src/my-projct/_opam/lib/ISO8601@A "/Users/s/src/my-projct/_opam/lib/csexp@      /Users/s/src/my-projct/_opam/lib/dyn@AB    &/Users/s/src/my-projct/_opam/lib/fileutils@ &/Users/s/src/my-projct/_opam/lib/ocaml/str@        '/Users/s/src/my-projct/_opam/lib/ocaml/unix@AB      %/Users/s/src/my-projct/_opam/lib/ordering@CD?/Users/s/src/my-projct/_opam/lib/pp@       /Users/s/src/my-projct/_opam/lib/seq@A      )/Users/s/src/my-projct/_opam/lib/stdlib-shims@     #/Users/s/src/my-projct/_opam/lib/stdune@A   4/Users/s/src/my-projct/_opam/lib/stdune/filesystem_stubs@  !/Users/s/src/my-projct/_opam/lib/toml@A    "default/bin/my-projct/.main.eobjs/byte@BCDE@*@A(@&@AB$@"@ @AB@CD@@A@@A@@)bin/my-projct@ABCDE"-w -@1..3@5..28@30..39@43@46..47@49..57@61..62-400-strict-sequence/-strict-formats,-short-paths*-keep-locs"-g@@@@6default/bin/my-projct/main@ࠠ$Main@9default/bin/my-projct/main.ml%ocaml@#.ml@@@@.workspace_root@B@@@+ocamlformat@@@&--impl@@@@*input_file@b@@@,.ocamlformat3.ocamlformat-ignore3.ocamlformat-enable@A$.mli@@@@#@"@@@!@@@&--intf@@@@ @@@@:default/bin/my-projct/main.mliB/dune__exe__Main@@B@@A@@
+$ cat _build/default/bin/my-project/.merlin-conf/exe-main
+DUNE-merlin-confv4:C    "/Users/s/src/my-project/_opam/lib/ocaml@    $/Users/s/src/my-project/_opam/lib/ISO8601@A "/Users/s/src/my-project/_opam/lib/csexp@      /Users/s/src/my-project/_opam/lib/dyn@AB    &/Users/s/src/my-project/_opam/lib/fileutils@ &/Users/s/src/my-project/_opam/lib/ocaml/str@        '/Users/s/src/my-project/_opam/lib/ocaml/unix@AB      %/Users/s/src/my-project/_opam/lib/ordering@CD?/Users/s/src/my-project/_opam/lib/pp@       /Users/s/src/my-project/_opam/lib/seq@A      )/Users/s/src/my-project/_opam/lib/stdlib-shims@     #/Users/s/src/my-project/_opam/lib/stdune@A   4/Users/s/src/my-project/_opam/lib/stdune/filesystem_stubs@  !/Users/s/src/my-project/_opam/lib/toml@A    "default/bin/my-project/.main.eobjs/byte@BCDE@*@A(@&@AB$@"@ @AB@CD@@A@@A@@)bin/my-project@ABCDE"-w -@1..3@5..28@30..39@43@46..47@49..57@61..62-400-strict-sequence/-strict-formats,-short-paths*-keep-locs"-g@@@@6default/bin/my-project/main@ࠠ$Main@9default/bin/my-project/main.ml%ocaml@#.ml@@@@.workspace_root@B@@@+ocamlformat@@@&--impl@@@@*input_file@b@@@,.ocamlformat3.ocamlformat-ignore3.ocamlformat-enable@A$.mli@@@@#@"@@@!@@@&--intf@@@@ @@@@:default/bin/my-project/main.mliB/dune__exe__Main@@B@@A@@
 ```
 
 I see references to `stdune` and `fileutils` which are two of the external
 libraries I'm using in my project.
 
+But digging through the dune source code it looks like this is a custom format
+Dune uses to store internal state to disk so it doesn't have to recompute it on
+subsequent runs:
+```
+(** Persistent values *)
+
+(** This module allows to store values on disk so that they persist after Dune
+    has exited and can be re-used by the next run of Dune.
+
+    Values are simply marshaled using the [Marshal] module and manually
+    versioned. As such, it is important to remember to increase the version
+    number when the type of persistent values changes.
+
+    In the future, we hope to introduce a better mechanism so that persistent
+    values are automatically versioned. *)
+
+```
+
 The [Dune
 docs](https://dune.readthedocs.io/en/stable/usage.html#querying-merlin-configuration)
 also describe some merlin-related commands. Of note, running `dune ocaml dump-dot-merlin`
-in a directory with some .ml files will print out a config file like the one in
-merlin's custom build system docs, but so far I haven't managed to make that
-type of config file actually do anything to OCaml-LSP.
+in a directory with some .ml files will print out a merlin config file. Let's
+try running the LSP server in a way that respects the merlin config.
+
+## OCaml-LSP for Non-Dune Projects with Merlin
+
+
