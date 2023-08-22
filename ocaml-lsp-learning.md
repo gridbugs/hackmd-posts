@@ -20,13 +20,13 @@ source files in my editor all references to external libraries are highlighted
 as errors.
 
 All the docs for OCaml-LSP and the editor service
-[merlin](https://ocaml.github.io/merlin/) which it uses internally express
+[Merlin](https://ocaml.github.io/merlin/) which it uses internally express
 pretty clearly that they work best with Dune but they can still be used without
 Dune with some configuration. My project does of course technically still use
 Dune but you wouldn't know it by looking at its source code. It would be more
 accurate to say that the script that generates the temporary dune project is my
 project's build system rather than Dune. That is to say that OCaml-LSP and
-merlin are going to take some configuration in order to work in my project.
+Merlin are going to take some configuration in order to work in my project.
 
 This post will describe the process of getting OCaml-LSP working in my non-Dune
 project. I'll be using neovim with the
@@ -43,11 +43,12 @@ external library installed with Opam. Editing the original version of that file
 (outside the generated Dune project) I can jump to the definition of local
 functions and functions from the OCaml prelude but not external libraries, plus
 OCaml-LSP highlights any external modules as errors as it can't find the
-libraries where they are defined. Also, back in the generated Dune project, if I
-delete the `_build` directory and attempt to edit a copy of a source file I get
-the same behaviour as if I was editing the original (OCaml-LSP doesn't know
-about external libraries). That's what I expected - something inside the
-`_build` directory was allowing OCaml-LSP to find external libraries.
+libraries where those modules are defined. Also, back in the generated Dune
+project, if I delete the `_build` directory and attempt to edit a copy of a
+source file I get the same behaviour as if I was editing the original
+(OCaml-LSP doesn't know about external libraries). That's what I expected -
+something inside the `_build` directory was allowing OCaml-LSP to find external
+libraries.
 
 So the question is which files from `_build` are important for letting OCaml-LSP
 find external libraries?
@@ -67,7 +68,8 @@ that OCaml-LSP didn't know about. This error from the log caught my eye:
 (`Toml.Types.Table.Key.to_string` was the function whose definition I was trying
 to jump to.)
 
-It's time to learn about `merlin` - the OCaml code analyzer used internally by
+The error message suggest that Merlin was unable to find the definition of that function.
+It's time to learn about Merin - the OCaml code analyzer used internally by
 OCaml-LSP.
 
 ## Merlin
@@ -75,8 +77,8 @@ OCaml-LSP.
 Merlin's [website](https://ocaml.github.io/merlin/) links to [docs for manual
 configuration](https://github.com/ocaml/merlin/wiki/Project-configuration). It
 assumes your project builds with Dune by default but if you use a different
-build system  you can place a `.merlin` file at your project root with
-instructions on how to find code and libraries.
+build system you can manually configure Merlin by placing a `.merlin` file at
+your project root with instructions on how to find code and libraries.
 
 Its syntax looks like:
 ```
@@ -95,18 +97,19 @@ OCaml-LSP's docs say that if I start it with a flag `--fallback-read-dot-merlin`
 then it will respect the `.merlin` file at the root of my project. I configured
 my editor to start OCaml-LSP with that command:
 ```vim
+" This configures the language server neovim will start when editing an OCaml file
 let g:LanguageClient_serverCommands = {
 \ 'ocaml': ['opam', 'exec', 'ocamllsp', '--', '--fallback-read-dot-merlin'],
 \ }
 ```
 
 Now I need a way to generate a `.merlin` file for my project. Since this already
-works for the generate Dune project as long as its `_build` directory is
+works for the generated Dune project as long as its `_build` directory is
 present, that's the first place I checked.
 
 A cursory glance revealed a file
 `_build/default/bin/my-project/.merlin-conf/exe-main` which doesn't look
-human-readable but dose contain strings that seem to correspond to the locations
+human-readable but does contain strings that seem to correspond to the locations
 of external libraries.
 
 ```
@@ -120,7 +123,7 @@ $/Users/s/src/my-project/_opam/lib/ISO8601@A "/Users/s/src/my-project/_opam/lib/
 I see references to `fileutils` and a bunch of other external libraries
 I'm using in my project.
 
-But digging through the dune source code it looks like this is a custom format
+But digging through the Dune source code it looks like this is a custom format
 Dune uses to store internal state to disk so it doesn't have to recompute it on
 subsequent runs:
 ```
@@ -138,13 +141,13 @@ subsequent runs:
 
 ```
 
-So this is isn't going to work for me. Even if I could parse that file I would
-be exposed to the risk of its format changing without warning and breaking my
-code, since it's not intended to be stable across Dune releases.
+So this is isn't going to work for me. Even if I could parse that file it's
+just a serialization of an internal Dune data structure and not some general
+format that Merlin will understand.
 
 The [Dune
 docs](https://dune.readthedocs.io/en/stable/usage.html#querying-merlin-configuration)
-also describe some merlin-related commands. Of note, running `dune ocaml dump-dot-merlin`
+describe some merlin-related commands. Of note, running `dune ocaml dump-dot-merlin`
 in a directory with some .ml files will print out a merlin config file.
 
 ```
