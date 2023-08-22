@@ -111,12 +111,14 @@ of external libraries.
 
 ```
 $ cat _build/default/bin/my-project/.merlin-conf/exe-main
-DUNE-merlin-confv4:C    "/Users/s/src/my-project/_opam/lib/ocaml@    $/Users/s/src/my-project/_opam/lib/ISO8601@A "/Users/s/src/my-project/_opam/lib/csexp@      /Users/s/src/my-project/_opam/lib/dyn@AB    &/Users/s/src/my-project/_opam/lib/fileutils@ &/Users/s/src/my-project/_opam/lib/ocaml/str@        '/Users/s/src/my-project/_opam/lib/ocaml/unix@AB      %/Users/s/src/my-project/_opam/lib/ordering@CD?/Users/s/src/my-project/_opam/lib/pp@       /Users/s/src/my-project/_opam/lib/seq@A      )/Users/s/src/my-project/_opam/lib/stdlib-shims@     #/Users/s/src/my-project/_opam/lib/stdune
+DUNE-merlin-confv4:C    "/Users/s/src/my-project/_opam/lib/ocaml
+$/Users/s/src/my-project/_opam/lib/ISO8601@A "/Users/s/src/my-project/_opam/lib/csexp@
+&/Users/s/src/my-project/_opam/lib/fileutils@ &/Users/s/src/my-project/_opam/lib/ocaml/str@
 ...
 ```
 
-I see references to `stdune` and `fileutils` which are two of the external
-libraries I'm using in my project.
+I see references to `fileutils` and a bunch of other external libraries
+I'm using in my project.
 
 But digging through the dune source code it looks like this is a custom format
 Dune uses to store internal state to disk so it doesn't have to recompute it on
@@ -170,7 +172,8 @@ docs:
 ```
 $ ocamllsp --help
 ...
-  --fallback-read-dot-merlin read Merlin config from .merlin files. The `dot-merlin-reader` package must be installed
+  --fallback-read-dot-merlin read Merlin config from .merlin files.
+    The `dot-merlin-reader` package must be installed
 ```
 
 `dot-merlin-reader` eh? There was no mention of that on their online
