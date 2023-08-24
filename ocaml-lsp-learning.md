@@ -11,7 +11,7 @@ developers write code.
 
 My unconventional project is an experiment to see if Dune files can be generated
 at build time. I have a directory with some OCaml source files (but no `dune`
-file and a single top-level metadata file with things like the name of the
+file) and a single top-level metadata file with things like the name of the
 package and a list of dependencies (kind of like a combination of `dune` and
 `dune-project` files but with different syntax). I wrote a script which takes
 this non-Dune project and generates a temporary directory `_dune` containing a
