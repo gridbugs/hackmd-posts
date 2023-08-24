@@ -1,59 +1,61 @@
-# Getting the OCaml Language Server Working in a Non-Dune Project
+# Down the Rabbit Hole: Getting the OCaml Language Server Working in a Non-Dune Project
 
 Skip to the end if you just want instructions on how to do this!
 
-My goal is to get [OCaml-LSP](https://github.com/ocaml/ocaml-lsp) - the
-[Language Server Protocol](https://microsoft.github.io/language-server-protocol/)
-implementation for OCaml - running on a project that builds in an unconventional way.
-OCaml-LSP is the tool than allows text editors to navigate through source code
-and annotate symbols with their documentation, and many other tasks to help
-developers write code.
-
-My unconventional project is an experiment to see if Dune files can be generated
-at build time. I have a directory with some OCaml source files (but no `dune`
-file) and a single top-level metadata file with things like the name of the
-package and a list of dependencies (kind of like a combination of `dune` and
-`dune-project` files but with different syntax). I wrote a script which takes
-this non-Dune project and generates a temporary directory `_dune` containing a
-copy of all the OCaml source code and generates the Dune files (`dune-project`,
-`dune`, etc), then runs `dune build` inside the `_dune` directory to build the
-generated dune project. This works fine but when I open the original OCaml
-source files in my editor all references to external libraries are highlighted
-as errors.
-
-All the docs for OCaml-LSP and the editor service
-[Merlin](https://ocaml.github.io/merlin/) which it uses internally express
-pretty clearly that they work best with Dune _but_ they can still be used without
-Dune with some configuration. My project does of course technically still use
-Dune but you wouldn't know it by looking at its source code. It would be more
-accurate to say that the script that generates the temporary Dune project is my
-project's build system rather than Dune itself. That is to say that OCaml-LSP and
-Merlin are going to take some configuration in order to work in my project.
-
-This post will describe the process of getting OCaml-LSP working in my non-Dune
-project. I'll be using Neovim with the
+This post will describe the process of how I got OCaml-LSP working in my non-Dune
+project. I used Neovim with the
 [LanguageClient-neovim](https://github.com/autozimu/LanguageClient-neovim)
 plugin as my editor, but see the instructions at the end of this post for the
 equivalent VSCode configuration.
 
+My goal was to get [OCaml-LSP](https://github.com/ocaml/ocaml-lsp) - the
+[Language Server Protocol](https://microsoft.github.io/language-server-protocol/)
+implementation for OCaml - running on a project that builds in an unconventional way.
+OCaml-LSP is a tool that allows text editors to navigate through source code
+and annotate symbols with their documentation, as well as performing many other tasks that help
+developers write code.
+
+My 'unconventional project' was an experiment to see if Dune files could be generated
+at build time. I had a directory with some OCaml source files (but no `dune`
+file) and a single top-level metadata file with things like the name of the
+package and a list of dependencies (kind of like a combination of `dune` and
+`dune-project` files but with different syntax). I wrote a script which took
+this non-Dune project and generated a temporary `_dune` directory  containing a
+copy of all the OCaml source code and the generated Dune files (`dune-project`,
+`dune`, etc), then ran `dune build` inside the `_dune` directory to build the
+generated Dune project. This seemed to work fine, but when I opened the original OCaml
+source files in my editor all references to external libraries were highlighted
+as errors.
+
+All the docs for OCaml-LSP and the editor service
+[Merlin](https://ocaml.github.io/merlin/), which it uses internally, express
+pretty clearly that they work best _with_ Dune but can still be used without
+Dune with _some configuration_. My project did of course technically still use
+Dune, but you wouldn't have known it by looking at its source code. It would be more
+accurate to say that the script that generated the temporary Dune project was my
+project's build system rather than Dune itself. This meant that, according to the docs, OCaml-LSP and
+Merlin should have worked for my project after some configurations were made. 
+
+I decided to explore what these configurations would look like. 
+
 ## First Steps
 
-As as sanity check the first thing I tried was running my script to generate a
-Dune project, building that project, and testing OCaml-LSP by editing the copies
+As as sanity check, the first thing I tried was running my script to generate a
+Dune project, building that project, and then testing OCaml-LSP by editing the copies
 of the source files in the generated project. Here everything worked as I
 expected, for example I could jump to the definition of a function from an
 external library installed with Opam. Editing the original version of that file
-(outside the generated Dune project) I can jump to the definition of local
+(outside the generated Dune project), I could jump to the definition of local
 functions and functions from the OCaml prelude but not external libraries, plus
-OCaml-LSP highlights any external modules as errors as it can't find the
-libraries where those modules are defined. Also, back in the generated Dune
-project, if I delete the `_build` directory and attempt to edit a copy of a
-source file I get the same behaviour as if I was editing the original
-(OCaml-LSP doesn't know about external libraries). That's what I expected -
-something inside the `_build` directory was allowing OCaml-LSP to find external
+OCaml-LSP highlighted any external modules as errors as it couldn't find the
+libraries where those modules were defined. Also, back in the generated Dune
+project, if I deleted the `_build` directory and attempt to edit a copy of a
+source file I would get the same behaviour as if I was editing the original
+(OCaml-LSP doesn't know about external libraries). That's what I expected - there was
+something inside the `_build` directory that was allowing OCaml-LSP to find external
 libraries.
 
-So the question is which files from `_build` are important for letting OCaml-LSP
+So the question was, which files from `_build` were important for letting OCaml-LSP
 find external libraries?
 
 To get some more information about how OCaml-LSP works I enabled logging in my
@@ -69,15 +71,16 @@ that OCaml-LSP didn't know about. This error from the log caught my eye:
 'Locate' query to merlin returned error: not in environment: ...
 ```
 
-The error message suggests that Merlin was unable to find the definition of that function.
-It's time to learn about Merin - the OCaml code analyzer used internally by
+The error message suggested that Merlin was unable to find the definition of that function.
+
+It's time to learn about Merlin - the OCaml code analyser used internally by
 OCaml-LSP.
 
 ## Merlin
 
 Merlin's [website](https://ocaml.github.io/merlin/) links to [docs for manual
 configuration](https://github.com/ocaml/merlin/wiki/Project-configuration). It
-assumes your project builds with Dune by default but if you use a different
+assumes your project builds with Dune by default, but if you use a different
 build system you can manually configure Merlin by placing a `.merlin` file at
 your project root containing instructions on how to find code and libraries.
 
@@ -95,7 +98,9 @@ B _build/src/bar
 ```
 
 OCaml-LSP's README says that if I run `ocamllsp` with a flag `--fallback-read-dot-merlin`
-then it will respect the `.merlin` file at the root of my project. I configured
+then it will respect the `.merlin` file at the root of my project. 
+
+I configured
 my editor to start OCaml-LSP with that command:
 ```vim
 " This configures the language server neovim will start when editing an OCaml file
@@ -104,23 +109,23 @@ let g:LanguageClient_serverCommands = {
 \ }
 ```
 
-Note that it runs the command `opam exec ocamllsp -- --fallback-read-dot-merlin`
-rather than simply `ocamllsp --fallback-read-dot-merlin` because when you
+Note that it ran the command `opam exec ocamllsp -- --fallback-read-dot-merlin`
+rather than simply `ocamllsp --fallback-read-dot-merlin`. This is because when you
 install OCaml-LSP with Opam the directory containing the `ocamllsp` executable
 won't be in your shell's `$PATH` variable unless you run `eval $(opam env)`
-before launching your editor and I _always_ forget to do this. Running the
-command with `opam exec` works in this case because `opam` is always in your
-`$PATH` and it knows how to find executables which were installed with Opam.
+before launching your editor, and I _always_ forget to do this. Running the
+command with `opam exec` works since `opam` is always in your
+`$PATH` and knows how to find executables that were installed with Opam.
 Don't forget the `--` between `ocamllsp` and `--fallback-read-dot-merlin` or
 you'll be passing that flag to `opam` rather than to `ocamllsp`.
 
-Now I need a way to generate a `.merlin` file for my project. Since this already
+Now I needed a way to generate a `.merlin` file for my project. Since this already
 works for the generated Dune project as long as its `_build` directory is
 present, that's the first place I checked.
 
 A cursory glance revealed a file
-`_build/default/bin/my-project/.merlin-conf/exe-main` which doesn't look
-human-readable but does contain strings that seem to correspond to the locations
+`_build/default/bin/my-project/.merlin-conf/exe-main` which didn't look
+human-readable but did contain strings that seem to correspond to the locations
 of external libraries.
 
 ```
@@ -131,10 +136,10 @@ $/home/s/src/my-project/_opam/lib/ISO8601@A "/home/s/src/my-project/_opam/lib/cs
 ...
 ```
 
-I see references to `fileutils` and a bunch of other external libraries
-I'm using in my project.
+I could see references to `fileutils` and a bunch of other external libraries
+I was using in my project.
 
-But digging through the Dune source code it looks like this is a custom format
+But when digging through the Dune source code, it looked like this was a custom format
 Dune uses to store internal state to disk so it doesn't have to recompute it on
 subsequent runs:
 ```
@@ -152,9 +157,9 @@ subsequent runs:
 
 ```
 
-So this is isn't going to work for me. Even if I could parse that file it's
-just a serialization of an internal Dune data structure and not some general
-format that Merlin will understand.
+So that wasn't going to work for me. Even if I could parse that file it was
+just a serialisation of an internal Dune data structure and not some general
+format that Merlin would understand.
 
 The [Dune
 docs](https://dune.readthedocs.io/en/stable/usage.html#querying-merlin-configuration)
@@ -181,8 +186,8 @@ my project and tried editing an original OCaml source and...
 It still didn't work. It behaved the same as if the `.merlin` file wasn't
 there.
 
-Maybe I missed something in configuring OCaml-LSP. Taking a look at its CLI
-docs:
+Maybe I missed something in configuring OCaml-LSP? A look at its CLI
+docs revealed:
 ```
 $ ocamllsp --help
 ...
@@ -190,7 +195,7 @@ $ ocamllsp --help
     The `dot-merlin-reader` package must be installed
 ```
 
-`dot-merlin-reader` eh? There was no mention of that in the README (at the time of writing).
+`dot-merlin-reader` what? There was no mention of that in the README (at the time of writing).
 
 That was probably my issue. I installed it:
 ```
@@ -199,7 +204,7 @@ $ opam install dot-merlin-reader
 
 And now...
 
-It still doesn't work. Same problem as before.
+It still didn't work. Same problem as before.
 
 ## Going Deeper
 
@@ -213,7 +218,7 @@ strace $OCAMLLSP --fallback-read-dot-merlin 2> /tmp/ocamllsp.strace
 ```
 This will run OCaml-LSP logging every system call to `/tmp/ocamllsp.strace`. I
 saved this file to `strace-ocamllsp.sh` and put it in somewhere in my `$PATH`.
-Then I updated my editor (Neovim) config to run the script when it edits an OCaml file:
+Then I updated my editor (Neovim) config to run the script when it edited an OCaml file:
 ```vim
 " This configures the language server neovim will start when editing an OCaml file
 let g:LanguageClient_serverCommands = {
@@ -248,24 +253,24 @@ newfstatat(AT_FDCWD, "/home/dune-file", 0x7ffe4d08ec50, 0) = -1 ENOENT (No such 
 newfstatat(AT_FDCWD, "/dune-project", 0x7ffe4d08ec30, 0) = -1 ENOENT (No such file or directory)
 newfstatat(AT_FDCWD, "/dune-workspace", 0x7ffe4d08ec30, 0) = -1 ENOENT (No such file or directory)
 ```
-That looks like OCaml-LSP is trying to files named `dune-project` or
+It looked like OCaml-LSP was trying to read files named `dune-project` or
 `dune-workspace` starting next to the source file I opened and repeatedly
 searching in parent directories going up to the file system root. In a Dune
 project these files are usually present in the project's root directory which
 also happens to be where the `.merlin` file is meant to go.
 
-My first guess would be that OCaml-LSP is using the `dune-project` or
+My first guess was that OCaml-LSP was using the `dune-project` or
 `dune-workspace` file to identify the project's root directory before reading
 the `.merlin` file from there. A little strange since
-`--fallback-read-dot-merlin` is meant for use in non-Dune projects, but it's
+`--fallback-read-dot-merlin` is meant for use in non-Dune projects, but it was
 easy to test:
 ```
 $ touch dune-workspace   # creates an empty file named "dune-workspace"
 ```
 
-And now it works!
+And now it worked!
 
-Just for fun we can check the trace:
+Just for fun I checked the trace:
 ```strace
 newfstatat(AT_FDCWD, "/home/s/src/my-project/src/.merlin", 0x7ffc65ebc430, 0) = -1 ENOENT (No such file or directory)
 newfstatat(AT_FDCWD, "/home/s/src/my-project/src/dune-project", 0x7ffc65ebc430, 0) = -1 ENOENT (No such file or directory)
@@ -275,26 +280,26 @@ newfstatat(AT_FDCWD, "/home/s/src/my-project/src/dune-file", 0x7ffc65ebc430, 0) 
 newfstatat(AT_FDCWD, "/home/s/src/my-project/.merlin", {st_mode=S_IFREG|0644, st_size=5589, ...}, 0) = 0
 ```
 
-So it's definitely looking for a `.merlin` file now and on the last line of that
+So it was definitely looking for a `.merlin` file, and on the last line of that
 snippet it found one!
 
-Reading through OCaml-LSP's source code confirms that `dune-project` and
-`dune-workspace` are used to identify the project's root directory. Clearly this
-is a bug in OCaml-LSP as the main use case for the `--fallback-read-dot-merlin`
-flag is when you're not using Dune.
+Reading through OCaml-LSP's source code confirmed that `dune-project` and
+`dune-workspace` were used to identify the project's root directory. Clearly this
+was a bug in OCaml-LSP as the main use case for the `--fallback-read-dot-merlin`
+flag is for when you're not using Dune.
 
 It turns out this is a known issue: [.merlin based projects still require a
 blank dune-project file](https://github.com/ocaml/ocaml-lsp/issues/859). That
-issue had been open for almost a year and by an amazing coincidence the day
+issue had been open for almost a year and in an amazing coincidence the day
 before I attempted this experiment a
 [PR](https://github.com/ocaml/ocaml-lsp/pull/1173) was raised which fixed it.
 
-## How to use OCaml-LSP for non-Dune projects
+## How to Use OCaml-LSP for Non-Dune Projects
 
-To wrap up this post, here are instructions on how to configure your editor and
+To wrap up this post, below are instructions on how to configure your editor and
 project to use OCaml-LSP without Dune.
 
-### Run `ocamllsp` with the `--fallback-read-dot-merlin` flag
+### Run `ocamllsp` with the `--fallback-read-dot-merlin` Flag
 
 Since `ocamllsp` is started by your text editor you'll need to configure your
 editor to pass the extra flag.
@@ -330,7 +335,7 @@ Run:
 opam install dot-merlin-reader
 ```
 
-### Install `ocaml-lsp-server` with version at least `1.17.0`
+### Install `ocaml-lsp-server` with Version `1.17.0` or Above
 
 This version will include the bug fix that allows OCaml-LSP to find `.merlin`
 without a `dune-workspace` or `dune-project` to be present.
@@ -350,25 +355,31 @@ opam pin ocaml-lsp-server.git https://github.com/ocaml/ocaml-lsp.git
 
 Note that the `git` in `ocaml-lsp-server.git` is the version number that will
 be associated with the installation of the `ocaml-lsp-server` package. I chose
-`git` to distinguish this version from other versions of that package known
-about by Opam. Replace `git` with whatever you like.
+`git` to distinguish this version from other versions of that package known by Opam. You can replace `git` with whatever you like.
 
 Check your version by running:
 ```
 opam exec ocamllsp -- --version
 ```
 
-### Make a `.merlin` file in your project root
+### Make a `.merlin` File in Your Project Root
 
 Read the [Merlin docs for manual
 configuration](https://github.com/ocaml/merlin/wiki/Project-configuration). You
 can generate `.merlin` with Dune in a temporary Dune project (as I've done in
 this post) by running `dune ocaml dump-dot-merlin` in the directory containing
-your code or alternatively you can write a `.merlin` file by hand.
+your code, or alternatively you can write a `.merlin` file by hand.
 
-### Try editing a file!
+### Try Editing a File!
 
-And hopefully OCaml-LSP will work correctly in your editor. This required more
+Hopefully OCaml-LSP will work correctly in your editor. This required more
 configuration than I would have liked. I would rather OCaml-LSP respect
 `.merlin` files by default and include `dot-merlin-reader` among its
 dependencies so the user doesn't have to install it manually.
+
+## Conclusion
+This was an interesting rabbit hole to go down! As I said, the whole process involved more configuration than I think should be necessary, but it was technically possible to use OCaml-LSP and Merlin in a non-Dune project. 
+
+Something that is nice to see is that there is momentum in the community to keep addressing these sorts of problems. If you notice a bug and you don't want to problem solve yourself like I did, or if you get stuck, I recommend asking for help over on [Discuss](https://discuss.ocaml.org), as there are a lot of people there who are willing to help. You should also of course check if the bug has been reported, and if not, create an issue yourself to give the community a chance to address the problem. 
+
+I hope you got something useful out of my experimentation, until next time! 
