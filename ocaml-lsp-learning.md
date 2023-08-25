@@ -111,7 +111,7 @@ let g:LanguageClient_serverCommands = {
 \ }
 ```
 
-Note that it ran the command `opam exec ocamllsp -- --fallback-read-dot-merlin`
+Note tha I configured Neovim to run the command `opam exec ocamllsp -- --fallback-read-dot-merlin`
 rather than simply `ocamllsp --fallback-read-dot-merlin`. This is because when you
 install OCaml-LSP with Opam the directory containing the `ocamllsp` executable
 won't be in your shell's `$PATH` variable unless you run `eval $(opam env)`
