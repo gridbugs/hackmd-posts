@@ -579,7 +579,7 @@ time of writing I have an open PR to fix this bug.
 ## Inline Testing
 
 My synthesizer library can decode MIDI both from files and external devices. I
-elected to write my own MIDI parser rather than use the one from `mm`. Fool me
+elected to write my own OCaml MIDI parser rather than use the one from `mm`. Fool me
 once, etc., and I thought writing a MIDI parser could be a fun exercise. The most
 complicated part is probably "Variable Length Quantities" - an encoding for
 integers where the most-significant bit of each byte is used to mark the final
@@ -712,7 +712,7 @@ reducing the number of tests that get written. Dune already has a higher
 barrier for testing than cargo since you have to explicitly enable inline tests
 in the dune file of the library under test and install `ppx_inline_test`. In
 Rust if I have a _passing curiosity_ about whether my code works in some case
-all I have to do is add a function tagged with `#[test]` and run `cargo test`.
+all I have to do is add a function tagged with `#[test]` and run `cargo test`. Rust achieves this with highly integrating tooling in cargo, where as Dune has opted for a less coupled approach. Both approaches come with their costs and benefits.
 
 ## Local Packages and Opam
 
@@ -1003,7 +1003,7 @@ that my own ability to be somewhat productive in personal OCaml projects is a
 consequence of privilege, primarily having enough free time and attention and
 general computing knowledge to debug all the weird issues I seem to encounter.
 Plus my work lets me spend two days each month hacking on personal OCaml
-projects. I expect many people will find OCaml tooling to be even less accessible
+projects, such as [llama](https://github.com/gridbugs/llama/)! I expect many people will find OCaml tooling to be even less accessible
 than I do and if we only recommend OCaml to those privileged enough to handle
 our tools and exclude everyone else then what effect is that going to have on
 our community?
@@ -1014,3 +1014,6 @@ difficulties using it are due to a sum of unrelated quirks or a symptom of a
 broader systemic problem.
 
 Or maybe the problem is me.
+
+## Call to action
+...
