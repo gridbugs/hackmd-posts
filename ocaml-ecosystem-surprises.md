@@ -1018,5 +1018,30 @@ broader systemic problem.
 
 Or maybe the problem is me.
 
-## Call to action
-...
+## Call(s) to Action
+
+My intended response to this post depends on where you sit in the OCaml community.
+
+If you are a seasoned OCaml user I'm interested to know what specific issues
+bother you about tooling and how you work around them. Do your frustrations line
+up with mine? Are they echoed in [OCFS's 2022 OCaml User
+Survey](https://ocaml-sf.org/docs/2022/ocaml-user-survey-2022.pdf). Do you have
+some entirely new issue I might not have heard about yet? Complain to me!
+
+If you tried out OCaml for a course or a job or if you were just curious and
+tried it out on your own time then first of all _thank you so much for reading
+about my experiences with the ecosystem!_ I'm interested whether our tools and
+libraries made you feel welcome here. If you gave up on OCaml and switched to
+another ecosystem that's ok! I did the same when I first tried setting up OCaml
+on my machine several years ago. Which language did you switch to? I went back
+to Rust. I have a theory that due to the language's similarities Rust
+programmers try out OCaml and then switch back to Rust because of issues like
+the ones I described in this post. If that was you then I'd love to hear about
+your experience!
+
+And if you work on OCaml tooling then what do you think about my theory about
+Rust users trying OCaml and switching back to Rust? As our community grows, where
+are the new users going to come from? If the answer is "the Rust community" then
+what can we do to help them stick around since it's so easy to just go back to
+Rust? What is your answer to "Why don't more people use OCaml?" Do you use OCaml
+for personal projects?
