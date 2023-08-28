@@ -342,7 +342,7 @@ pub fn send_sample(mut t: ocaml::Pointer<OutputStreamOcaml>, sample: f32) {
 external send_sample : t -> float -> unit = "send_sample"
 ```
 
-You can even get dune to build your cargo project for you:
+You can even get Dune to build your Cargo project for you:
 ```clojure
 (rule
  (target liblow_level.a)
@@ -358,7 +358,7 @@ You can even get dune to build your cargo project for you:
 
 This rule creates the `liblow_level.a` file that was used in the previous
 section. The `low-level-rust` directory in the `(source_tree low-level-rust)`
-contains a regular old cargo project (ie. it has a `Cargo.toml` file and a
+contains a regular old Cargo project (ie. it has a `Cargo.toml` file and a
 `src` directory containing Rust code).
 
 There's lots more information about interoperability between OCaml and Rust in
@@ -388,7 +388,7 @@ So I went ahead and created the file low-level-rust/.cargo/config.toml after
 vendoring all my dependencies, and to make sure that no dependencies were being
 clandestinely downloaded I replaced `run cargo build --release` with
 `run cargo build --release --offline` in the `dune` file, and also removed all my
-cached cargo packages by running `cargo cache --remove-dir all`.
+cached Cargo packages by running `cargo cache --remove-dir all`.
 
 ```
 $ dune build
@@ -419,12 +419,12 @@ examples  CHANGELOG.md  Cargo.toml  Dockerfile  README.md
 src       Cargo.lock    Cross.toml  LICENSE     build.rs
 ```
 
-And yet cargo cannot see it.
+And yet Cargo cannot see it.
 
 Fifteen or so minutes of confusion turned to disappointment when I learnt
 through trial and error that the `.cargo` directory wasn't being copied because
 `(source_tree ...)` silently ignores directories whose names begin
-with a ".". This meant that cargo didn't know to look in the `vendor` directory
+with a ".". This meant that Cargo didn't know to look in the `vendor` directory
 for packages. If you've been bitten by this and found this page by searching "dune
 ignores hidden folders" then feel free to share your story at the GitHub issue:
 [Hidden folders are ignored in source_tree
@@ -444,7 +444,7 @@ from accidentally copying `.git` or `_build` into the `_build` directory, but
 this feels like a case of a tool trying to be helpful by making assumptions that
 turn into surprising behaviour when the assumptions don't hold. These types of
 problems tend to be hard to debug as the symptoms of the problem are far removed
-from the source of the problem (cargo couldn't find a dependency because I put
+from the source of the problem (Cargo couldn't find a dependency because I put
 its configuration in a directory whose named started with a "."). In addition
 it's often hard to find documentation or advice online for this reason. It
 wasn't obvious that this was a quirk of `(source_tree ...)` so I didn't know to
@@ -709,11 +709,11 @@ purposes encourages them to think more about how they structure their private
 APIs. This may be true but I can't help but feel like this extra barrier to
 testing will also have the practical effect of (possibly subconsciously)
 reducing the number of tests that get written. Dune already has a higher
-barrier for testing than cargo since you have to explicitly enable inline tests
+barrier for testing than Cargo since you have to explicitly enable inline tests
 in the dune file of the library under test and install `ppx_inline_test`. In
 Rust if I have a _passing curiosity_ about whether my code works in some case
 all I have to do is add a function tagged with `#[test]` and run `cargo test`.
-Rust achieves this with highly integrated tooling in cargo, whereas Dune has
+Rust achieves this with highly integrated tooling in Cargo, whereas Dune has
 opted for a less coupled approach. Both approaches come with their costs and
 benefits.
 
@@ -846,7 +846,7 @@ fter 0 ms: Couldn't connect to server)
 It tried to build the  `llama` package in the Opam sandbox (with no internet
 access, remember) and obviously this doesn't work when building the package from
 the repo as I don't check-in the vendored Rust dependencies. Building the rust
-component meant that cargo tried to download dependencies but couldn't due to the lack of
+component meant that Cargo tried to download dependencies but couldn't due to the lack of
 internet access in the Opam sandbox.
 
 I don't even want to build or install the `llama` package though - just its dependencies! Unlike `opam
