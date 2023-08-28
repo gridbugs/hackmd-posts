@@ -712,7 +712,10 @@ reducing the number of tests that get written. Dune already has a higher
 barrier for testing than cargo since you have to explicitly enable inline tests
 in the dune file of the library under test and install `ppx_inline_test`. In
 Rust if I have a _passing curiosity_ about whether my code works in some case
-all I have to do is add a function tagged with `#[test]` and run `cargo test`. Rust achieves this with highly integrating tooling in cargo, where as Dune has opted for a less coupled approach. Both approaches come with their costs and benefits.
+all I have to do is add a function tagged with `#[test]` and run `cargo test`.
+Rust achieves this with highly integrated tooling in cargo, whereas Dune has
+opted for a less coupled approach. Both approaches come with their costs and
+benefits.
 
 ## Local Packages and Opam
 
