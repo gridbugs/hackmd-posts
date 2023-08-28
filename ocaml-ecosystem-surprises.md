@@ -1006,7 +1006,7 @@ that my own ability to be somewhat productive in personal OCaml projects is a
 consequence of privilege, primarily having enough free time and attention and
 general computing knowledge to debug all the weird issues I seem to encounter.
 Plus my work lets me spend two days each month hacking on personal OCaml
-projects, such as [llama](https://github.com/gridbugs/llama/)! I expect many people will find OCaml tooling to be even less accessible
+projects (such as the [llama](https://github.com/gridbugs/llama/) synthesizer library!). I expect many people will find OCaml tooling to be even less accessible
 than I do and if we only recommend OCaml to those privileged enough to handle
 our tools and exclude everyone else then what effect is that going to have on
 our community?
