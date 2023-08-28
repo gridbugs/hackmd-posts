@@ -1024,7 +1024,7 @@ My intended response to this post depends on where you sit in the OCaml communit
 
 If you are a seasoned OCaml user I'm interested to know what specific issues
 bother you about tooling and how you work around them. Do your frustrations line
-up with mine? Are they echoed in [OCFS's 2022 OCaml User
+up with mine? Are they echoed in [OCSF's 2022 OCaml User
 Survey](https://ocaml-sf.org/docs/2022/ocaml-user-survey-2022.pdf). Do you have
 some entirely new issue I might not have heard about yet? Complain to me!
 
