@@ -1028,7 +1028,7 @@ up with mine? Are they echoed in [OCSF's 2022 OCaml User
 Survey](https://ocaml-sf.org/docs/2022/ocaml-user-survey-2022.pdf). Do you have
 some entirely new issue I might not have heard about yet? Complain to me!
 
-If you tried out OCaml for a course or a job or if you were just curious and
+If you used OCaml for a course or a job or if you were just curious and
 tried it out on your own time then first of all _thank you so much for reading
 about my experiences with the ecosystem!_ I'm interested whether our tools and
 libraries made you feel welcome here. If you gave up on OCaml and switched to
